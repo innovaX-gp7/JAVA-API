@@ -118,11 +118,11 @@ public class Dados {
     public String criarTabelaDados() {
         String sql = "CREATE TABLE IF NOT EXISTS dados (\n" +
                 "    idDados INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
-                "    cidade VARCHAR(45), \n" +
-                "    unidadeFederativa VARCHAR(50) NOT NULL,\n" +
                 "    areaDesmatada DECIMAL(4,2) NOT NULL,\n" +
                 "    temperaturaMensal DECIMAL(4,2) NOT NULL,\n" +
                 "    precipitacaoMensal DECIMAL(4,2) NOT NULL,\n" +
+                "    cidade VARCHAR(45), \n" +
+                "    unidadeFederativa VARCHAR(50) NOT NULL,\n" +
                 "    mes TINYINT,\n" +
                 "    ano YEAR,\n" +
                 ") AUTO_INCREMENT = 100;";
