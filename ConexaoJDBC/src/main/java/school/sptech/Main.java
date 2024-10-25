@@ -37,7 +37,7 @@ public class Main {
         // Criando objetos para serem usados posteriormente
         Empresa empresa = new Empresa();
         Funcionario funcionario = new Funcionario();
-        Dashboard dashboard = new Dashboard();
+        Dados dados = new Dados();
         ParametrosRecomendacoes parametrosRecomendacoes = new ParametrosRecomendacoes();
         RecomendacoesIA recomendacoesIA = new RecomendacoesIA();
         LogsJAR logsJAR = new LogsJAR();
@@ -47,7 +47,7 @@ public class Main {
             // Aqui estamos tentando executar os métodos para criação de tabelas
             con.execute(empresa.criarTabelaEmpresa());
             con.execute(funcionario.criarTabelaFuncionario());
-            con.execute(dashboard.criarTabelaDashboard());
+            con.execute(dados.criarTabelaDados());
             con.execute(recomendacoesIA.criarTabelaRecomendacoesIA());
             con.execute(parametrosRecomendacoes.criarTabelaParametrosRecomendacoes());
             con.execute(logsJAR.criarTabelaLogsJAR());

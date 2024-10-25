@@ -10,7 +10,6 @@ public class ParametrosRecomendacoes {
     // Criando atributos dos Parametros(aqui deve ser o mesmo nome que as colunas do Banco)
     private Integer idParametros;
     private BigDecimal limiteArea;
-    private LocalTime horarioNotificoes;
     private Integer fk_empresa_recom;
 
     // Cria uma conexão com o banco de dados e obtém um objeto `JdbcTemplate` para interagir com ele.
@@ -21,10 +20,9 @@ public class ParametrosRecomendacoes {
     public ParametrosRecomendacoes(){}
 
     // Criando construtor com os parâmetros
-    public ParametrosRecomendacoes(Integer idParametros, BigDecimal limiteArea, LocalTime horarioNotificoes, Integer fk_empresa_recom, Conexao conexao, JdbcTemplate con) {
+    public ParametrosRecomendacoes(Integer idParametros, BigDecimal limiteArea, Integer fk_empresa_recom, Conexao conexao, JdbcTemplate con) {
         this.idParametros = idParametros;
         this.limiteArea = limiteArea;
-        this.horarioNotificoes = horarioNotificoes;
         this.fk_empresa_recom = fk_empresa_recom;
         this.conexao = conexao;
         this.con = con;
@@ -44,14 +42,6 @@ public class ParametrosRecomendacoes {
 
     public void setLimiteArea(BigDecimal limiteArea) {
         this.limiteArea = limiteArea;
-    }
-
-    public LocalTime getHorarioNotificoes() {
-        return horarioNotificoes;
-    }
-
-    public void setHorarioNotificoes(LocalTime horarioNotificoes) {
-        this.horarioNotificoes = horarioNotificoes;
     }
 
     public Integer getFk_empresa_recom() {
@@ -82,7 +72,6 @@ public class ParametrosRecomendacoes {
         String sql = "CREATE TABLE IF NOT EXISTS parametrosRecomendacoes (\n" +
                 "idParametros INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
                 "limiteArea DECIMAL (4,2),\n" +
-                "horarioNotificacoes TIME,\n" +
                 "fkEmpresaRecomendacoes INT,\n" +
                 "CONSTRAINT fk_empresa_recom FOREIGN KEY (fkEmpresaRecomendacoes) REFERENCES empresa(idEmpresa)\n" +
                 ")auto_increment=10000;";

@@ -7,7 +7,7 @@ public class RecomendacoesIA {
     private Integer idRecomedacoes;
     private String unidadeFederativa;
     private String recomendacao;
-    private Integer fk_dashboard;
+    private Integer fkEmpresa;
 
     // Cria uma conexão com o banco de dados e obtém um objeto `JdbcTemplate` para interagir com ele.
     Conexao conexao = new Conexao();
@@ -20,11 +20,11 @@ public class RecomendacoesIA {
     ;
 
     // Criando construtor com parâmetros
-    public RecomendacoesIA(Integer idRecomedacoes, String unidadeFederativa, String recomendacao, Integer fk_dashboard, Conexao conexao, JdbcTemplate con) {
+    public RecomendacoesIA(Integer idRecomedacoes, String unidadeFederativa, String recomendacao, Integer fkEmpresa, Conexao conexao, JdbcTemplate con) {
         this.idRecomedacoes = idRecomedacoes;
         this.unidadeFederativa = unidadeFederativa;
         this.recomendacao = recomendacao;
-        this.fk_dashboard = fk_dashboard;
+        this.fkEmpresa = fkEmpresa;
         this.conexao = conexao;
         this.con = con;
     }
@@ -53,12 +53,12 @@ public class RecomendacoesIA {
         this.recomendacao = recomendacao;
     }
 
-    public Integer getFk_dashboard() {
-        return fk_dashboard;
+    public Integer getFkEmpresa() {
+        return fkEmpresa;
     }
 
-    public void setFk_dashboard(Integer fk_dashboard) {
-        this.fk_dashboard = fk_dashboard;
+    public void setFkEmpresa(Integer fkEmpresa) {
+        this.fkEmpresa = fkEmpresa;
     }
 
     public Conexao getConexao() {
@@ -82,8 +82,8 @@ public class RecomendacoesIA {
                 "idRecomendacoes INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
                 "unidadeFederativa VARCHAR(50) NOT NULL,\n" +
                 "recomendacao VARCHAR(100) NOT NULL,\n" +
-                "fkDashboard INT,\n" +
-                "CONSTRAINT fk_dashboard FOREIGN KEY(fkDashboard) REFERENCES dashboard(idDashboard)\n" +
+                "fkEmpresa INT,\n" +
+                "CONSTRAINT fk_empresa FOREIGN KEY(fkEmpresa) REFERENCES empresa(idEmpresa)\n" +
                 ")AUTO_INCREMENT=1000;";
         return sql;
     }

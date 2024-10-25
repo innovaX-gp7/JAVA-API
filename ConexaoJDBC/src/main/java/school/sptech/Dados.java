@@ -4,38 +4,39 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.math.BigDecimal;
 
-public class Dashboard {
+public class Dados {
 
     // Cria uma conexão com o banco de dados e obtém um objeto `JdbcTemplate` para interagir com ele.
     Conexao conexao = new Conexao();
     JdbcTemplate con = conexao.getConexaoDoBanco();
 
-    // Criando atributos da Dashboard
-    private Integer idDashboard;
+    // Criando atributos dos Dados
+    private Integer idDados;
     private String unidadeFederativa;
     private Byte mes;
     private Integer ano;
     private BigDecimal areaDesmatada;
     private BigDecimal temperaturaMensal;
-    private Integer fk_empresa;
+    private String cidade;
 
     // Criando construtor vazio
-    public Dashboard() {
+    public Dados() {
     }
 
 
     // Criando construtor com parâmetros
-    public Dashboard(Conexao conexao, JdbcTemplate con, Integer id, String unidadeFederativa, Byte mes, Integer ano, BigDecimal areaDesmatada, BigDecimal temperaturaMensal, Integer fk_empresa) {
+    public Dados(Conexao conexao, JdbcTemplate con, Integer id, String cidade, String unidadeFederativa, Byte mes, Integer ano, BigDecimal areaDesmatada, BigDecimal temperaturaMensal) {
         this.conexao = conexao;
         this.con = con;
-        this.idDashboard = id;
+        this.idDados = id;
         this.unidadeFederativa = unidadeFederativa;
+        this.cidade = cidade;
         this.mes = mes;
         this.ano = ano;
         this.areaDesmatada = areaDesmatada;
         this.temperaturaMensal = temperaturaMensal;
-        this.fk_empresa = fk_empresa;
     }
+
 
     public Conexao getConexao() {
         return conexao;
@@ -54,12 +55,21 @@ public class Dashboard {
     }
 
     public Integer getId() {
-        return idDashboard;
+        return idDados;
     }
 
     public void setId(Integer id) {
-        this.idDashboard = id;
+        this.idDados = id;
     }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
 
     public String getUnidadeFederativa() {
         return unidadeFederativa;
@@ -101,27 +111,20 @@ public class Dashboard {
         this.temperaturaMensal = temperaturaMensal;
     }
 
-    public Integer getFk_empresa() {
-        return fk_empresa;
-    }
 
-    public void setFk_empresa(Integer fk_empresa) {
-        this.fk_empresa = fk_empresa;
-    }
 
 
     // Criando metódo para criar a tabela no Banco
-    public String criarTabelaDashboard() {
-        String sql = "CREATE TABLE IF NOT EXISTS dashboard (\n" +
-                "    idDashboard INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
+    public String criarTabelaDados() {
+        String sql = "CREATE TABLE IF NOT EXISTS dados (\n" +
+                "    idDados INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
+                "    cidade VARCHAR(45), \n" +
                 "    unidadeFederativa VARCHAR(50) NOT NULL,\n" +
-                "    mes TINYINT,\n" +
-                "    ano YEAR,\n" +
                 "    areaDesmatada DECIMAL(4,2) NOT NULL,\n" +
                 "    temperaturaMensal DECIMAL(4,2) NOT NULL,\n" +
                 "    precipitacaoMensal DECIMAL(4,2) NOT NULL,\n" +
-                "    fkEmpresa INT,\n" +
-                "    CONSTRAINT fk_empresa FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)\n" +
+                "    mes TINYINT,\n" +
+                "    ano YEAR,\n" +
                 ") AUTO_INCREMENT = 100;";
         return sql;
     }
