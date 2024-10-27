@@ -117,15 +117,28 @@ public class Dados {
     // Criando metódo para criar a tabela no Banco
     public String criarTabelaDados() {
         String sql = "CREATE TABLE IF NOT EXISTS dados (\n" +
-                "    idDados INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
-                "    areaDesmatada DECIMAL(4,2) NOT NULL,\n" +
-                "    temperaturaMensal DECIMAL(4,2) NOT NULL,\n" +
-                "    precipitacaoMensal DECIMAL(4,2) NOT NULL,\n" +
+                "    idDados INT PRIMARY KEY  AUTO_INCREMENT,\n" +
+                "    areaDesmatada DECIMAL(5,2),\n" +
+                "    temperaturaMensal BIGINT,\n" +
+                "    precipitacaoMensal DECIMAL(5,2),\n" +
                 "    cidade VARCHAR(45), \n" +
                 "    unidadeFederativa VARCHAR(50) NOT NULL,\n" +
-                "    mes TINYINT,\n" +
-                "    ano YEAR,\n" +
+                "    mes TINYINT NOT NULL,\n" +
+                "    ano YEAR NOT NULL\n" +
                 ") AUTO_INCREMENT = 100;";
         return sql;
     }
+
+    public String inserirDados(String temperaturaMensal, String precipitacaoMensal, String cidade, String unidadeFederativa, Integer ano, Integer mes ){
+        String sql = "INSERT INTO dados (temperaturaMensal, precipitacaoMensal, cidade, unidadeFederativa, ano, mes) VALUES (" + temperaturaMensal + ", " + precipitacaoMensal + ", '" + cidade + "', '" + unidadeFederativa + "', " + ano + ", " + mes + ")";
+        return sql;
+    }
+
+    public String inserirDadosDesmatamentos(String uf, String anoFinal, Integer mesInt, Double area) {
+        String sql = "INSERT INTO dados (unidadeFederativa, ano, mes, areaDesmatada) " +
+                "VALUES ('" + uf + "', " + anoFinal + ", " + mesInt + ", " + area + ")";
+        return sql;
+    }
+
+
 }
