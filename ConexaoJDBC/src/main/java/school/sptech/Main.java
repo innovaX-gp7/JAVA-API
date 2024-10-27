@@ -8,6 +8,7 @@ import school.sptech.s3.BucketController;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class Main {
@@ -43,8 +43,14 @@ public class Main {
         LogsJAR logsJAR = new LogsJAR();
         PromptIA promptIA = new PromptIA();
 
+
+        String derrubarDados = "drop table if exists dados;";
+
+
         try {
             // Aqui estamos tentando executar os métodos para criação de tabelas
+            con.execute(derrubarDados);
+            System.out.println("Dropou");
             con.execute(empresa.criarTabelaEmpresa());
             con.execute(funcionario.criarTabelaFuncionario());
             con.execute(dados.criarTabelaDados());
@@ -88,7 +94,7 @@ public class Main {
                 e.printStackTrace();
             }
 
-            return;
+
         }
         for (Bucket bucket : buckets) {
             List<S3Object> objects = bucketController.listarObjetos(bucket.name()); //LISTAR ARQUIVOS DO BUCKET
@@ -156,11 +162,22 @@ public class Main {
                     // Processa os dados a partir da linha 11
                     for (Row row : sheet) {
                         if (row.getRowNum() >= 11) {  // Processa apenas as linhas a partir da 11
+
                             String[] valores = getCellValue(row.getCell(0)).split(";");
                             String data = valores[0];  // Data de medição
-                            String precipitacaoMensal = valores[1]; // Precipitação total mensal
-                            String temperaturaMediaMensal = valores[2]; // Temperatura média mensal
+                            String precipitacaoMensal = valores[1].replace(",",".");
+                            String temperaturaMediaMensal = valores[2].replace(",","."); // Temperatura média mensal
 
+                            if(valores[1].isEmpty() || valores[1] == null){
+                                precipitacaoMensal = null;
+                            }
+                            if(valores[2].isEmpty() || valores[2] == null){
+                                temperaturaMediaMensal = null;
+                            }
+
+                            LocalDate dataFormatada = LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            int ano = dataFormatada.getYear();
+                            int mes = dataFormatada.getMonthValue();
                             // Corrige o formato de precipitação
                             if (precipitacaoMensal.startsWith(",")) {
                                 precipitacaoMensal = "0" + precipitacaoMensal;  // Adiciona o zero antes da vírgula
@@ -169,6 +186,10 @@ public class Main {
                             // Exemplo de saída dos dados
                             System.out.println("Data: " + data + ", Precipitação: " + precipitacaoMensal + ", Temperatura Média: " + temperaturaMediaMensal);
 
+
+                            // Inserindo dados no banco
+                                    con.update(dados.inserirDados(temperaturaMediaMensal, precipitacaoMensal, cidade, uf, ano, mes));
+                            System.out.println("Insert de precipitação deu certo!");
                         }
                     }
                 } else {
@@ -204,8 +225,12 @@ public class Main {
 
                             // Soma a área desmatada para a chave correspondente
                             desmatamentoMap.put(chaveComposta, desmatamentoMap.getOrDefault(chaveComposta, 0.0) + area);
+
+                            con.update(dados.inserirDadosDesmatamentos(uf,anoFinal, mesInt, area));
+
                         }
                     }
+                    System.out.println("Insert de desmatamento deu certo!");
                 }
                 workbook.close();
             } catch (Exception e) {
