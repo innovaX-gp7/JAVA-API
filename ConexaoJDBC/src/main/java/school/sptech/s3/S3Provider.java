@@ -24,7 +24,7 @@ public class S3Provider {
                 .region(Region.US_EAST_1)
                 .credentialsProvider(() -> credentials)
                 .httpClientBuilder(ApacheHttpClient.builder()
-                        .maxConnections(200)
+                        .maxConnections(10000)
                 )
                 .build();
     }
