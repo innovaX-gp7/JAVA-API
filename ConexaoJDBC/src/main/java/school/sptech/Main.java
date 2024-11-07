@@ -8,6 +8,8 @@ import school.sptech.s3.BucketController;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ public class Main {
         var horaDataAtual = LocalDateTime.now();
         var horaDataAtualFormatada = formatador.format(horaDataAtual);
         System.out.println(horaDataAtualFormatada);
+        var caminhoDoLog = "log.txt";
 
 
 
@@ -51,6 +54,8 @@ public class Main {
             // Aqui estamos tentando executar os métodos para criação de tabelas
             con.execute(derrubarDados);
             System.out.println("Dropou");
+            registrarLog(caminhoDoLog, "Dropou", horaDataAtualFormatada);
+
             con.execute(empresa.criarTabelaEmpresa());
             con.execute(funcionario.criarTabelaFuncionario());
             con.execute(dados.criarTabelaDados());
@@ -60,9 +65,11 @@ public class Main {
             con.execute(promptIA.criarTabelaPromptIA());
 
             System.out.println("Tabelas criadas com sucesso!");
+            registrarLog(caminhoDoLog, "Tabelas criadas com sucesso!", horaDataAtualFormatada);
         } catch (DataAccessException e) {
             // Esse bloco de código só será executado caso a tentativa tenha alguma exceção
             System.err.println("Erro ao criar as tabelas: " + e.getMessage());
+            registrarLog(caminhoDoLog, "Erro ao criar as tabelas", horaDataAtualFormatada);
         }
 
 
@@ -74,9 +81,11 @@ public class Main {
         List<Bucket> buckets = bucketController.listarBuckets(); //Listar buckets (um, nesse caso)
 
         try {
+            registrarLog(caminhoDoLog, "Buckets listados", horaDataAtualFormatada);
             System.out.println(String.format(sqlText, "Buckets listados", horaDataAtualFormatada));
             con.execute(String.format(sqlText, "Buckets listados", horaDataAtualFormatada));
         } catch (Exception e) {
+            registrarLog(caminhoDoLog, "Erro ao listar buckets", horaDataAtualFormatada);
             e.printStackTrace();
         }
 
@@ -85,12 +94,14 @@ public class Main {
 
 
         if (buckets == null || buckets.isEmpty()) {
-            bucketController.createBucket("innovaxs3");
+            bucketController.createBucket("innovaxs7");
 
             try {
+                registrarLog(caminhoDoLog, "Bucket criado", horaDataAtualFormatada);
                 System.out.println(String.format(sqlText, "Bucket criado", horaDataAtualFormatada));
                 con.execute(String.format(sqlText, "Bucket criado", horaDataAtualFormatada));
             } catch (Exception e) {
+                registrarLog(caminhoDoLog, "Erro ao criar bucket: ", horaDataAtualFormatada);
                 e.printStackTrace();
             }
 
@@ -100,18 +111,22 @@ public class Main {
             List<S3Object> objects = bucketController.listarObjetos(bucket.name()); //LISTAR ARQUIVOS DO BUCKET
 
             try {
+                registrarLog(caminhoDoLog, "Arquivos do bucket listados", horaDataAtualFormatada);
                 System.out.println(String.format(sqlText, "Arquivos do bucket listados", horaDataAtualFormatada));
                 con.execute(String.format(sqlText, "Arquivos do bucket listados", horaDataAtualFormatada));
             } catch (Exception e) {
+                registrarLog(caminhoDoLog, "Erro ao listar arquivos do bucket", horaDataAtualFormatada);
                 e.printStackTrace();
             }
 
             if (objects != null) {
                 bucketController.baixarObjetos(objects, bucket.name());
                 try {
+                    registrarLog(caminhoDoLog, "Arquivos do bucket baixados", horaDataAtualFormatada);
                     System.out.println(String.format(sqlText, "Arquivos do bucket baixados", horaDataAtualFormatada));
                     con.execute(String.format(sqlText, "Arquivos do bucket baixados", horaDataAtualFormatada));
                 } catch (Exception e) {
+                    registrarLog(caminhoDoLog, "Erro ao baixar arquivos do bucket", horaDataAtualFormatada);
                     e.printStackTrace();
                 }
             }
@@ -276,6 +291,16 @@ public class Main {
                 return cell.getCellFormula();
             default:
                 return "";
+        }
+    }
+    private static void registrarLog(String caminhoDoLog, String descricao, String horaDataAtualFormatada) {
+        String entradaLog = String.format("[%s] %s", horaDataAtualFormatada, descricao);
+        System.out.println(entradaLog);
+
+        try (FileWriter writer = new FileWriter(caminhoDoLog, true)){
+            writer.write(entradaLog + System.lineSeparator());
+        } catch (IOException e) {
+            System.err.println("Erro ao escrever no arquivo de log: " + e.getMessage());
         }
 
     }
