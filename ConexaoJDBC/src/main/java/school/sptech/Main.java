@@ -94,7 +94,7 @@ public class Main {
 
 
         if (buckets == null || buckets.isEmpty()) {
-            bucketController.createBucket("innovaxs7");
+            bucketController.createBucket("innovaxs3");
 
             try {
                 registrarLog(caminhoDoLog, "Bucket criado", horaDataAtualFormatada);
