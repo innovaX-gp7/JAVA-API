@@ -9,6 +9,8 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -99,7 +101,7 @@ public class Main {
 
 
             if (buckets == null || buckets.isEmpty()) {
-                bucketController.createBucket(bucketName); //"innovaxs3"
+                bucketController.createBucket("innovaxs3");
 
                 try {
                     registrarLog(caminhoDoLog, "Bucket criado", horaDataAtualFormatada);
