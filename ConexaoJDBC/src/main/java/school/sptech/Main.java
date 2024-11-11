@@ -61,25 +61,25 @@ public class Main {
                 System.out.println("Dropou");
                 registrarLog(caminhoDoLog, "Dropou", horaDataAtualFormatada);
 
-            con.execute(empresa.criarTabelaEmpresa());
-            con.execute(funcionario.criarTabelaFuncionario());
-            con.execute(dados.criarTabelaDados());
-            con.execute(recomendacoesIA.criarTabelaRecomendacoesIA());
-            con.execute(parametrosRecomendacoes.criarTabelaParametrosRecomendacoes());
-            con.execute(logsJAR.criarTabelaLogsJAR());
-            con.execute(promptIA.criarTabelaPromptIA());
+                con.execute(empresa.criarTabelaEmpresa());
+                con.execute(funcionario.criarTabelaFuncionario());
+                con.execute(dados.criarTabelaDados());
+                con.execute(recomendacoesIA.criarTabelaRecomendacoesIA());
+                con.execute(parametrosRecomendacoes.criarTabelaParametrosRecomendacoes());
+                con.execute(logsJAR.criarTabelaLogsJAR());
+                con.execute(promptIA.criarTabelaPromptIA());
 
-            System.out.println("Tabelas criadas com sucesso!");
-            registrarLog(caminhoDoLog, "Tabelas criadas com sucesso!", horaDataAtualFormatada);
-        } catch (DataAccessException e) {
-            // Esse bloco de código só será executado caso a tentativa tenha alguma exceção
-            System.err.println("Erro ao criar as tabelas: " + e.getMessage());
-            registrarLog(caminhoDoLog, "Erro ao criar as tabelas", horaDataAtualFormatada);
-        }
+                System.out.println("Tabelas criadas com sucesso!");
+                registrarLog(caminhoDoLog, "Tabelas criadas com sucesso!", horaDataAtualFormatada);
+            } catch (DataAccessException e) {
+                // Esse bloco de código só será executado caso a tentativa tenha alguma exceção
+                System.err.println("Erro ao criar as tabelas: " + e.getMessage());
+                registrarLog(caminhoDoLog, "Erro ao criar as tabelas", horaDataAtualFormatada);
+            }
 
 
-        String sqlText = ("insert into logsJAR(descricao, dataHora) values ('%s','%s')");
-        //criou bucket, baixar arquivos bucket, dados inseridos
+            String sqlText = ("insert into logsJAR(descricao, dataHora) values ('%s','%s')");
+            //criou bucket, baixar arquivos bucket, dados inseridos
 
 //        View S3
             BucketController bucketController = new BucketController(); //CRIAR CONTROLE PRO S3
@@ -194,61 +194,69 @@ public class Main {
                                     precipitacaoMensal = "0" + precipitacaoMensal;  // Adiciona o zero antes da vírgula
                                 }
 
-                            // Exemplo de saída dos dados
-                            System.out.println("Data: " + data + ", Precipitação: " + precipitacaoMensal + ", Temperatura Média: " + temperaturaMediaMensal);
+                                // Exemplo de saída dos dados
+//                                System.out.println("Data: " + data + ", Precipitação: " + precipitacaoMensal + ", Temperatura Média: " + temperaturaMediaMensal);
 
 
-                            // Inserindo dados no banco
-                                    con.update(dados.inserirDados(temperaturaMediaMensal, precipitacaoMensal, cidade, uf, ano, mes));
-                            System.out.println("Insert de precipitação deu certo!");
-                        }
-                    }
-                } else {
-                    System.out.println("Arquivo é de desmatamento");
-
-                    // Itera pelas linhas da planilha
-                    for (Row row : sheet) {
-                        if (row.getRowNum() >= 1) {  // Ignora o cabeçalho
-
-                            // Pega os valores das colunas
-                            String year = getCellValue(row.getCell(0)); // "2020/2021"
-                            String month = getCellValue(row.getCell(1));
-                            String areaStr = getCellValue(row.getCell(2));
-                            double area = Double.parseDouble(areaStr);  // Converte para double
-                            String uf = getCellValue(row.getCell(3));  // Obtém a UF da coluna D (índice 3)
-
-                            // Remove o ".0" do mês convertendo para int
-                            int mesInt = (int) Double.parseDouble(month);
-
-                            // Separar o range de anos
-                            String[] anos = year.split("/");  // ["2020", "2021"]
-
-                            // Verifica se o mês é de 1 a 6 (usar o segundo ano) ou 7 a 12 (usar o primeiro ano)
-                            String anoFinal;
-                            if (mesInt >= 1 && mesInt <= 6) {
-                                anoFinal = anos[1];  // Segundo ano
-                            } else {
-                                anoFinal = anos[0];  // Primeiro ano
+                                // Inserindo dados no banco
+                                con.update(dados.inserirDados(temperaturaMediaMensal, precipitacaoMensal, cidade, uf, ano, mes));
+                                System.out.println("Insert de precipitação deu certo!");
                             }
-
-                            // Armazena o objeto Desmatamento
-                            String chaveComposta = uf + ":" + anoFinal + "/" + mesInt;  // "AM:2020-1"
-
-                            // Soma a área desmatada para a chave correspondente
-                            desmatamentoMap.put(chaveComposta, desmatamentoMap.getOrDefault(chaveComposta, 0.0) + area);
-
-                            con.update(dados.inserirDadosDesmatamentos(uf,anoFinal, mesInt, area));
-
                         }
-                    }
-                    System.out.println("Insert de desmatamento deu certo!");
-                }
-                workbook.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+                    } else {
+                        System.out.println("Arquivo é de desmatamento");
 
+                        // Itera pelas linhas da planilha
+                        for (Row row : sheet) {
+                            if (row.getRowNum() >= 1) {  // Ignora o cabeçalho
+
+                                // Pega os valores das colunas
+                                String year = getCellValue(row.getCell(0)); // "2020/2021"
+                                String month = getCellValue(row.getCell(1));
+                                String areaStr = getCellValue(row.getCell(2));
+                                double area = Double.parseDouble(areaStr);  // Converte para double
+                                String uf = getCellValue(row.getCell(3));  // Obtém a UF da coluna D (índice 3)
+
+                                // Remove o ".0" do mês convertendo para int
+                                int mesInt = (int) Double.parseDouble(month);
+
+                                // Separar o range de anos
+                                String[] anos = year.split("/");  // ["2020", "2021"]
+
+                                // Verifica se o mês é de 1 a 6 (usar o segundo ano) ou 7 a 12 (usar o primeiro ano)
+                                String anoFinal;
+                                if (mesInt >= 1 && mesInt <= 6) {
+                                    anoFinal = anos[1];  // Segundo ano
+                                } else {
+                                    anoFinal = anos[0];  // Primeiro ano
+                                }
+
+                                // Armazena o objeto Desmatamento
+                                String chaveComposta = uf + ":" + anoFinal + "/" + mesInt;  // "AM:2020-1"
+
+                                // Soma a área desmatada para a chave correspondente
+                                desmatamentoMap.put(chaveComposta, desmatamentoMap.getOrDefault(chaveComposta, 0.0) + area);
+
+                                con.update(dados.inserirDadosDesmatamentos(uf, anoFinal, mesInt, area));
+
+                            }
+                        }
+                        System.out.println("Insert de desmatamento deu certo!");
+                    }
+                    workbook.close();
+
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+            try {
+            // Log após o processamento de todos os arquivos
+                registrarLog(caminhoDoLog, "Arquivos manipulados", horaDataAtualFormatada);
+                System.out.println(String.format(sqlText, "Arquivos manipulados", horaDataAtualFormatada));
+                con.execute(String.format(sqlText, "Arquivos manipulados", horaDataAtualFormatada));
+            }catch (Exception e){
+                System.err.println(e.getMessage());
+            }
 
 
             // Exibe as cidades agrupadas por UF
