@@ -1,5 +1,6 @@
 package school.sptech.s3;
 
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -28,7 +29,7 @@ public class BucketController {
             System.out.println("Bucket Criado!");
         } catch (Exception e){
             System.out.println("Ocorreu um erro ao criar um bucket");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -44,6 +45,15 @@ public class BucketController {
         return objects;
     }
 
+    public ListObjectsV2Response listarObjetosPorPath(String bucketName, String path){
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(path)
+                .build();
+
+        return s3Client.listObjectsV2(listRequest);
+    }
+
     public void baixarObjetos(List<S3Object> objects, String bucketName){
         for (S3Object object : objects) {
             System.out.println(object);
@@ -55,19 +65,37 @@ public class BucketController {
 
 //            Captura objeto usando a requisição e tenta transformar para formato de arquivo que o java interpreta
             InputStream objectContent = s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
-
-            try {
-                File arquivo = new File("data/"+object.key());
-                if(!arquivo.exists()){
+            if(!object.key().endsWith("txt")) {
+                try {
+                    File arquivo = new File("data/" + object.key());
+                    if (!arquivo.exists()) {
 //                Copia arquivo do s3 para um arquivo local com o nome da key do objeto
-                Files.copy(objectContent, arquivo.toPath());
-                System.out.println("Copiou arquivo");
-                } else {
-                    System.out.println("Arquivo já baixado");
+                        Files.copy(objectContent, arquivo.toPath());
+                        System.out.println("Copiou arquivo");
+                    } else {
+                        System.out.println("Arquivo já baixado");
+                    }
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
+    }
+
+    public void enviarArquivo(String bucketName, String fileName, String path){
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+
+        s3Client.putObject(request, RequestBody.fromFile(new File(path)));
+    }
+
+    public void deletarArquivoPorNome(String bucketName, String fileName){
+        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build();
+        s3Client.deleteObject(deleteRequest);
     }
 }

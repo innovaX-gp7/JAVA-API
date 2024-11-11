@@ -26,11 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Main {
-    private static final S3Client s3Client = S3Client.builder()
-            .region(Region.US_EAST_1)
-            .build();
-    private static final String bucketName = "innovaxs3";
-
     public static void main(String[] args) {
         //        INFORMAÇÕES PRA TER NO LOG:
         //        DESCRIÇÃO, DATA_HORA, (fkempresa=null(dados-geral)), (fkempresa(especifica(dados-nao-geral)))
@@ -39,7 +34,7 @@ public class Main {
         var horaDataAtualFormatada = formatador.format(horaDataAtual);
         System.out.println(horaDataAtualFormatada);
         var caminhoDoLog = "log.txt";
-
+        String bucketName = "innovaxs3";
         try {
 
 
@@ -108,7 +103,7 @@ public class Main {
                     System.out.println(String.format(sqlText, "Bucket criado", horaDataAtualFormatada));
                     con.execute(String.format(sqlText, "Bucket criado", horaDataAtualFormatada));
                 } catch (Exception e) {
-                    System.err.println("Erro ao listar buckets: " + e.getMessage());
+                    System.err.println("Erro ao criar buckets: " + e.getMessage());
                     registrarLog(caminhoDoLog, "Erro ao criar bucket: ", horaDataAtualFormatada);
                 }
 
@@ -118,9 +113,9 @@ public class Main {
                 List<S3Object> objects = bucketController.listarObjetos(bucket.name()); //LISTAR ARQUIVOS DO BUCKET
 
                 try {
+                    con.execute(String.format(sqlText, "Arquivos do bucket listados", horaDataAtualFormatada));
                     registrarLog(caminhoDoLog, "Arquivos do bucket listados", horaDataAtualFormatada);
                     System.out.println(String.format(sqlText, "Arquivos do bucket listados", horaDataAtualFormatada));
-                    con.execute(String.format(sqlText, "Arquivos do bucket listados", horaDataAtualFormatada));
                 } catch (Exception e) {
                     System.err.println("Erro ao listar arquivos do buckets: " + e.getMessage());
                     registrarLog(caminhoDoLog, "Erro ao listar arquivos do bucket", horaDataAtualFormatada);
@@ -251,13 +246,17 @@ public class Main {
                     workbook.close();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.err.println(e.getMessage());
                 }
             }
+            try {
             // Log após o processamento de todos os arquivos
-            registrarLog(caminhoDoLog, "Arquivos manipulados", horaDataAtualFormatada);
-            System.out.println(String.format(sqlText, "Arquivos manipulados", horaDataAtualFormatada));
-            con.execute(String.format(sqlText, "Arquivos manipulados", horaDataAtualFormatada));
+                registrarLog(caminhoDoLog, "Arquivos manipulados", horaDataAtualFormatada);
+                System.out.println(String.format(sqlText, "Arquivos manipulados", horaDataAtualFormatada));
+                con.execute(String.format(sqlText, "Arquivos manipulados", horaDataAtualFormatada));
+            }catch (Exception e){
+                System.err.println(e.getMessage());
+            }
 
 
             // Exibe as cidades agrupadas por UF
@@ -276,16 +275,31 @@ public class Main {
 //            }
 
             // Upload do log para o S3 após todo o processamento
-            uploadLogParaS3(caminhoDoLog);
+            try {
+                // Gerar nome do novo arquivo
+                String horaAtual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm"));
+                String s3Key = String.format("logs/%s-log.txt", horaAtual);
+
+                // Listar arquivos existentes no bucket/pasta logs
+                ListObjectsV2Response listResponse = bucketController.listarObjetosPorPath(bucketName, "logs/");
+
+                // Excluir arquivos antigos
+                for(S3Object s3Object : listResponse.contents()) {
+                    if(!s3Object.key().equals(s3Key)) {
+                        bucketController.deletarArquivoPorNome(bucketName,s3Object.key());
+                        System.out.println("Log antigo excluído: " + s3Object.key());
+                    }
+                }
+
+                // Upload do novo arquivo
+                bucketController.enviarArquivo(bucketName, s3Key, caminhoDoLog);
+                System.out.println("Log enviado com sucesso para o S3: " + s3Key);
+            } catch (Exception e) {
+                System.err.println("Erro ao fazer o upload do log para o s3: " + e.getMessage());
+            }
 
         } catch (Exception e) {
             System.err.println("Erro durante o processamento: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            // Fechando o cliente S3
-            if (s3Client != null) {
-                s3Client.close();
-            }
         }
     }
 
@@ -309,46 +323,6 @@ public class Main {
                 return cell.getCellFormula();
             default:
                 return "";
-        }
-    }
-
-    private static void uploadLogParaS3(String log) {
-        try {
-            // Gerar nome do novo arquivo
-            String horaAtual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm"));
-            String s3Key = String.format("logs/%s-log.txt", horaAtual);
-
-            // Listar arquivos existentes no bucket/pasta logs
-            ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
-                    .bucket(bucketName)
-                    .prefix("logs/")
-                    .build();
-
-            ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
-
-            // Excluir arquivos antigos
-            for(S3Object s3Object : listResponse.contents()) {
-                if(!s3Object.key().equals(s3Key)) {
-                    DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                            .bucket(bucketName)
-                            .key(s3Object.key())
-                            .build();
-                    s3Client.deleteObject(deleteRequest);
-                    System.out.println("Log antigo exclúido: " + s3Object.key());
-                }
-            }
-
-            // Upload do novo arquivo
-            PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(s3Key)
-                    .build();
-
-            s3Client.putObject(request, RequestBody.fromFile(new File(log)));
-            System.out.println("Log enviado com sucesso para o S3: " + s3Key);
-        } catch (Exception e) {
-            System.err.println("Erro ao fazer o upload do log para o s3: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
