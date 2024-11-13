@@ -2,6 +2,7 @@ package school.sptech;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import school.sptech.s3.BucketController;
@@ -22,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         //        INFORMAÇÕES PRA TER NO LOG:
         //        DESCRIÇÃO, DATA_HORA, (fkempresa=null(dados-geral)), (fkempresa(especifica(dados-nao-geral)))
         var formatador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
@@ -45,6 +46,7 @@ public class Main {
         RecomendacoesIA recomendacoesIA = new RecomendacoesIA();
         LogsJAR logsJAR = new LogsJAR();
         PromptIA promptIA = new PromptIA();
+        Slack slack = new Slack();
 
 
         String derrubarDados = "drop table if exists dados;";
@@ -269,6 +271,7 @@ public class Main {
             double areaTotal = entry.getValue();
             System.out.printf("UF/Data: %s, Área Total Desmatada: %.2f km²\n", chave, areaTotal);
         }
+
     }
 
     // Função auxiliar para pegar o valor da célula como String
@@ -302,6 +305,5 @@ public class Main {
         } catch (IOException e) {
             System.err.println("Erro ao escrever no arquivo de log: " + e.getMessage());
         }
-
     }
 }

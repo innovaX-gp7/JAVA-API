@@ -1,0 +1,6 @@
+[2024-11-13 20:09:47.435] Erro ao criar as tabelas
+[2024-11-13 20:17:10.257] Erro ao criar as tabelas
+[2024-11-13 20:18:21.769] Erro ao criar as tabelas
+[2024-11-13 20:19:06.694] Erro ao criar as tabelas
+[2024-11-13 20:22:23.264] Erro ao criar as tabelas
+[2024-11-13 20:28:55.733] Erro ao criar as tabelas
