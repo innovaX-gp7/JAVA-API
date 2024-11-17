@@ -34,7 +34,7 @@ public class Main {
         var horaDataAtualFormatada = formatador.format(horaDataAtual);
         System.out.println(horaDataAtualFormatada);
         var caminhoDoLog = "log.txt";
-        String bucketName = "innovaxs3";
+        String bucketName = "s3-lab-ex06";
         try {
 
 
@@ -42,14 +42,10 @@ public class Main {
             Conexao conexao = new Conexao();
             JdbcTemplate con = conexao.getConexaoDoBanco();
 
+
+
             // Criando objetos para serem usados posteriormente
-            Empresa empresa = new Empresa();
-            Funcionario funcionario = new Funcionario();
-            Dados dados = new Dados();
-            ParametrosRecomendacoes parametrosRecomendacoes = new ParametrosRecomendacoes();
-            RecomendacoesIA recomendacoesIA = new RecomendacoesIA();
-            LogsJAR logsJAR = new LogsJAR();
-            PromptIA promptIA = new PromptIA();
+            CriacaoDeTabelas tabelas = new CriacaoDeTabelas();
 
 
             String derrubarDados = "drop table if exists dados;";
@@ -61,13 +57,15 @@ public class Main {
                 System.out.println("Dropou");
                 registrarLog(caminhoDoLog, "Dropou", horaDataAtualFormatada);
 
-                con.execute(empresa.criarTabelaEmpresa());
-                con.execute(funcionario.criarTabelaFuncionario());
-                con.execute(dados.criarTabelaDados());
-                con.execute(recomendacoesIA.criarTabelaRecomendacoesIA());
-                con.execute(parametrosRecomendacoes.criarTabelaParametrosRecomendacoes());
-                con.execute(logsJAR.criarTabelaLogsJAR());
-                con.execute(promptIA.criarTabelaPromptIA());
+                con.execute(tabelas.criarTabelaEmpresa());
+                con.execute(tabelas.criarTabelaUserRole());
+                con.execute(tabelas.criarTabelaUsuario());
+                con.execute(tabelas.criarTabelaPromptIA());
+                con.execute(tabelas.criarTabelaRecomendacaoIA());
+                con.execute(tabelas.criarTabelaTipoParametro());
+                con.execute(tabelas.criarTabelaParametroRecomendacao());
+                con.execute(tabelas.criarTabelaLogJAR());
+                con.execute(tabelas.criarTabelaLeitura());
 
                 System.out.println("Tabelas criadas com sucesso!");
                 registrarLog(caminhoDoLog, "Tabelas criadas com sucesso!", horaDataAtualFormatada);
@@ -78,7 +76,7 @@ public class Main {
             }
 
 
-            String sqlText = ("insert into logsJAR(descricao, dataHora) values ('%s','%s')");
+            String sqlText = ("insert into logJAR(descricao, created_at) values ('%s','%s')");
             //criou bucket, baixar arquivos bucket, dados inseridos
 
 //        View S3
@@ -199,7 +197,7 @@ public class Main {
 
 
                                 // Inserindo dados no banco
-                                con.update(dados.inserirDados(temperaturaMediaMensal, precipitacaoMensal, cidade, uf, ano, mes));
+                                con.update(InsercaoTabelas.inserirDados(temperaturaMediaMensal, precipitacaoMensal, cidade, uf, ano, mes));
                                 System.out.println("Insert de precipitação deu certo!");
                             }
                         }
@@ -237,7 +235,7 @@ public class Main {
                                 // Soma a área desmatada para a chave correspondente
                                 desmatamentoMap.put(chaveComposta, desmatamentoMap.getOrDefault(chaveComposta, 0.0) + area);
 
-                                con.update(dados.inserirDadosDesmatamentos(uf, anoFinal, mesInt, area));
+                                con.update(InsercaoTabelas.inserirDadosDesmatamentos(uf, anoFinal, mesInt, area));
 
                             }
                         }
