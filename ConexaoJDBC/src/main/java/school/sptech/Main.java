@@ -34,7 +34,7 @@ public class Main {
         var horaDataAtualFormatada = formatador.format(horaDataAtual);
         System.out.println(horaDataAtualFormatada);
         var caminhoDoLog = "log.txt";
-        String bucketName = "s3-lab-ex06";
+        String bucketName = "innovaxs3";
         try {
 
 

@@ -17,6 +17,8 @@ public class CriacaoDeTabelas {
                 "razaoSocial VARCHAR(80) NOT NULL,\n" +
                 "nomeFantasia VARCHAR(50) NOT NULL,\n" +
                 "cnpj VARCHAR(14) UNIQUE KEY DEFAULT NULL\n" +
+                "created_at DATETIME NOT NULL DEFAULT now(),\n" +
+                "modified_at DATETIME\n" +
                 ");";
         return sql;
     }
@@ -25,6 +27,8 @@ public class CriacaoDeTabelas {
         String sql = "CREATE TABLE IF NOT EXISTS userRole (\n" +
                 "id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
                 "nome VARCHAR(45) NOT NULL\n" +
+                "created_at DATETIME NOT NULL DEFAULT now(),\n" +
+                "modified_at DATETIME\n" +
                 ");";
         return sql;
     }
@@ -36,7 +40,7 @@ public class CriacaoDeTabelas {
                 "cpf VARCHAR(11) UNIQUE KEY DEFAULT NULL,\n" +
                 "email VARCHAR(45) UNIQUE KEY NOT NULL, \n" +
                 "senha VARCHAR(45) NOT NULL,\n" +
-                "created_at DATETIME NOT NULL,\n" +
+                "created_at DATETIME NOT NULL DEFAULT now(),\n" +
                 "modified_at DATETIME,\n" +
                 "fkEmpresa INT,\n" +
                 "fkUserRole INT,\n" +
@@ -52,6 +56,7 @@ public class CriacaoDeTabelas {
                 "id INT PRIMARY KEY AUTO_INCREMENT,\n" +
                 "descricao VARCHAR(1000),\n" +
                 "dataHora DATETIME\n" +
+                "created_at DATETIME NOT NULL DEFAULT now()\n" +
                 ");";
         return sql;
     }
