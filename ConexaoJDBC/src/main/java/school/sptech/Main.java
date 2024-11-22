@@ -27,36 +27,26 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        //        INFORMAÇÕES PRA TER NO LOG:
-        //        DESCRIÇÃO, DATA_HORA, (fkempresa=null(dados-geral)), (fkempresa(especifica(dados-nao-geral)))
         var formatador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         var horaDataAtual = LocalDateTime.now();
         var horaDataAtualFormatada = formatador.format(horaDataAtual);
-        System.out.println(horaDataAtualFormatada);
+
         var caminhoDoLog = "log.txt";
         String bucketName = "innovaxs3";
+        StringBuilder logText = new StringBuilder();
+
         try {
-
-
             // Inicializando a conexão com o banco
             Conexao conexao = new Conexao();
             JdbcTemplate con = conexao.getConexaoDoBanco();
 
-
-
             // Criando objetos para serem usados posteriormente
             CriacaoDeTabelas tabelas = new CriacaoDeTabelas();
 
-
             String derrubarDados = "drop table if exists dados;";
-
-
             try {
                 // Aqui estamos tentando executar os métodos para criação de tabelas
                 con.execute(derrubarDados);
-                System.out.println("Dropou");
-                registrarLog(caminhoDoLog, "Dropou", horaDataAtualFormatada);
-
                 con.execute(tabelas.criarTabelaEmpresa());
                 con.execute(tabelas.criarTabelaUserRole());
                 con.execute(tabelas.criarTabelaUsuario());
@@ -67,12 +57,13 @@ public class Main {
                 con.execute(tabelas.criarTabelaLogJAR());
                 con.execute(tabelas.criarTabelaLeitura());
 
-                System.out.println("Tabelas criadas com sucesso!");
-                registrarLog(caminhoDoLog, "Tabelas criadas com sucesso!", horaDataAtualFormatada);
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                logText = registrarLog(logText, "Tabelas Criadas", horaDataAtualFormatada);
             } catch (DataAccessException e) {
                 // Esse bloco de código só será executado caso a tentativa tenha alguma exceção
-                System.err.println("Erro ao criar as tabelas: " + e.getMessage());
-                registrarLog(caminhoDoLog, "Erro ao criar as tabelas", horaDataAtualFormatada);
+                String errorMensage = "Erro ao criar as tabelas: " + e.getMessage();
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                logText = registrarLog(logText, errorMensage, horaDataAtualFormatada);
             }
 
 
@@ -84,12 +75,13 @@ public class Main {
             List<Bucket> buckets = bucketController.listarBuckets(); //Listar buckets (um, nesse caso)
 
             try {
-                registrarLog(caminhoDoLog, "Buckets listados", horaDataAtualFormatada);
-                System.out.println(String.format(sqlText, "Buckets listados", horaDataAtualFormatada));
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
                 con.execute(String.format(sqlText, "Buckets listados", horaDataAtualFormatada));
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                logText = registrarLog(logText, "Buckets listados", horaDataAtualFormatada);
             } catch (Exception e) {
-                System.err.println("Erro ao listar buckets: " + e.getMessage());
-                registrarLog(caminhoDoLog, "Erro ao listar buckets", horaDataAtualFormatada);
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                logText = registrarLog(logText, "Erro ao listar buckets", horaDataAtualFormatada);
             }
 
 
@@ -97,12 +89,14 @@ public class Main {
                 bucketController.createBucket("innovaxs3");
 
                 try {
-                    registrarLog(caminhoDoLog, "Bucket criado", horaDataAtualFormatada);
-                    System.out.println(String.format(sqlText, "Bucket criado", horaDataAtualFormatada));
+                    horaDataAtualFormatada = formatador.format(LocalDateTime.now());
                     con.execute(String.format(sqlText, "Bucket criado", horaDataAtualFormatada));
+                    logText = registrarLog(logText, "Bucket criado", horaDataAtualFormatada);
+                    System.out.println(String.format(sqlText, "Bucket criado", horaDataAtualFormatada));
                 } catch (Exception e) {
                     System.err.println("Erro ao criar buckets: " + e.getMessage());
-                    registrarLog(caminhoDoLog, "Erro ao criar bucket: ", horaDataAtualFormatada);
+                    horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                    logText = registrarLog(logText, "Erro ao criar bucket: ", horaDataAtualFormatada);
                 }
 
 
@@ -111,23 +105,22 @@ public class Main {
                 List<S3Object> objects = bucketController.listarObjetos(bucket.name()); //LISTAR ARQUIVOS DO BUCKET
 
                 try {
+                    horaDataAtualFormatada = formatador.format(LocalDateTime.now());
                     con.execute(String.format(sqlText, "Arquivos do bucket listados", horaDataAtualFormatada));
-                    registrarLog(caminhoDoLog, "Arquivos do bucket listados", horaDataAtualFormatada);
-                    System.out.println(String.format(sqlText, "Arquivos do bucket listados", horaDataAtualFormatada));
+                    logText = registrarLog(logText, "Arquivos do bucket listados", horaDataAtualFormatada);
                 } catch (Exception e) {
-                    System.err.println("Erro ao listar arquivos do buckets: " + e.getMessage());
-                    registrarLog(caminhoDoLog, "Erro ao listar arquivos do bucket", horaDataAtualFormatada);
+                    String errorMensage = "Erro ao listar arquivos do buckets: " + e.getMessage();
+                    logText = registrarLog(logText, "Erro ao listar arquivos do bucket", horaDataAtualFormatada);
                 }
 
                 if (objects != null) {
                     bucketController.baixarObjetos(objects, bucket.name());
                     try {
-                        registrarLog(caminhoDoLog, "Arquivos do bucket baixados", horaDataAtualFormatada);
-                        System.out.println(String.format(sqlText, "Arquivos do bucket baixados", horaDataAtualFormatada));
+                        logText = registrarLog(logText, "Arquivos do bucket baixados", horaDataAtualFormatada);
                         con.execute(String.format(sqlText, "Arquivos do bucket baixados", horaDataAtualFormatada));
                     } catch (Exception e) {
-                        System.err.println("Erro ao baixar arquivos do bucket: " + e.getMessage());
-                        registrarLog(caminhoDoLog, "Erro ao baixar arquivos do bucket", horaDataAtualFormatada);
+                        String errorMensage = "Erro ao baixar arquivos do bucket" + e.getMessage();
+                        logText = registrarLog(logText, errorMensage, horaDataAtualFormatada);
                     }
                 }
             }
@@ -150,7 +143,7 @@ public class Main {
 
                     // Verifica se o arquivo é de temperatura pela célula "Nome"
                     if (getCellValue(sheet.getRow(0).getCell(0)).equalsIgnoreCase("Nome")) {
-                        System.out.println("Arquivo é de temperatura");
+                        System.out.println("Processando arquivo " + arquivo.getName());
 
                         // Pega o nome da cidade da célula B1 (linha 0, coluna 1)
                         String cidade = getCellValue(sheet.getRow(0).getCell(1)).trim();
@@ -160,7 +153,7 @@ public class Main {
 
                         // Verifica se a UF foi encontrada
                         if (uf != null) {
-                            System.out.println("Cidade: " + cidade + ", UF: " + uf);
+//                            System.out.println("Cidade: " + cidade + ", UF: " + uf);
 
                             // Adiciona a cidade ao mapa de sua respectiva UF
                             ufCidadesMap.computeIfAbsent(uf, k -> new ArrayList<>()).add(cidade);
@@ -198,11 +191,11 @@ public class Main {
 
                                 // Inserindo dados no banco
                                 con.update(InsercaoTabelas.inserirDados(temperaturaMediaMensal, precipitacaoMensal, cidade, uf, ano, mes));
-                                System.out.println("Insert de precipitação deu certo!");
+//                                System.out.println("Insert de precipitação deu certo!");
                             }
                         }
                     } else {
-                        System.out.println("Arquivo é de desmatamento");
+                        System.out.println("Processando arquivo de Desmatamento");
 
                         // Itera pelas linhas da planilha
                         for (Row row : sheet) {
@@ -239,7 +232,7 @@ public class Main {
 
                             }
                         }
-                        System.out.println("Insert de desmatamento deu certo!");
+//                        System.out.println("Insert de desmatamento deu certo!");
                     }
                     workbook.close();
 
@@ -249,8 +242,8 @@ public class Main {
             }
             try {
             // Log após o processamento de todos os arquivos
-                registrarLog(caminhoDoLog, "Arquivos manipulados", horaDataAtualFormatada);
-                System.out.println(String.format(sqlText, "Arquivos manipulados", horaDataAtualFormatada));
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                logText = registrarLog(logText, "Arquivos manipulados", horaDataAtualFormatada);
                 con.execute(String.format(sqlText, "Arquivos manipulados", horaDataAtualFormatada));
             }catch (Exception e){
                 System.err.println(e.getMessage());
@@ -275,23 +268,30 @@ public class Main {
             // Upload do log para o S3 após todo o processamento
             try {
                 // Gerar nome do novo arquivo
-                String horaAtual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm"));
-                String s3Key = String.format("logs/%s-log.txt", horaAtual);
+                String horaAtual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm:ss"));
+                String s3Key = String.format("logs/%s.logs", horaAtual);
 
                 // Listar arquivos existentes no bucket/pasta logs
                 ListObjectsV2Response listResponse = bucketController.listarObjetosPorPath(bucketName, "logs/");
 
-                // Excluir arquivos antigos
-                for(S3Object s3Object : listResponse.contents()) {
-                    if(!s3Object.key().equals(s3Key)) {
-                        bucketController.deletarArquivoPorNome(bucketName,s3Object.key());
-                        System.out.println("Log antigo excluído: " + s3Object.key());
-                    }
+//                // Excluir arquivos antigos
+//                for(S3Object s3Object : listResponse.contents()) {
+//                    if(!s3Object.key().equals(s3Key)) {
+//                        bucketController.deletarArquivoPorNome(bucketName,s3Object.key());
+//                        System.out.println("Log antigo excluído: " + s3Object.key());
+//                    }
+//                }
+
+                try (FileWriter writer = new FileWriter(caminhoDoLog)){
+                    writer.write(logText + System.lineSeparator());
+                } catch (IOException e) {
+                    System.err.println("Erro ao escrever no arquivo de log: " + e.getMessage());
                 }
 
                 // Upload do novo arquivo
                 bucketController.enviarArquivo(bucketName, s3Key, caminhoDoLog);
                 System.out.println("Log enviado com sucesso para o S3: " + s3Key);
+
             } catch (Exception e) {
                 System.err.println("Erro ao fazer o upload do log para o s3: " + e.getMessage());
             }
@@ -324,15 +324,10 @@ public class Main {
         }
     }
 
-    private static void registrarLog(String caminhoDoLog, String descricao, String horaDataAtualFormatada) {
-        String entradaLog = String.format("[%s] %s", horaDataAtualFormatada, descricao);
+    private static StringBuilder registrarLog(StringBuilder logText, String descricao, String horaDataAtualFormatada) {
+        String entradaLog = String.format("[%s] %s\n", horaDataAtualFormatada, descricao);
         System.out.println(entradaLog);
-
-        try (FileWriter writer = new FileWriter(caminhoDoLog, true)){
-            writer.write(entradaLog + System.lineSeparator());
-        } catch (IOException e) {
-            System.err.println("Erro ao escrever no arquivo de log: " + e.getMessage());
-        }
-
+        logText.append(entradaLog);
+        return logText;
     }
 }

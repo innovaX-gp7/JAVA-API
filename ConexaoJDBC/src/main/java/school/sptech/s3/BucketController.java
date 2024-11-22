@@ -41,7 +41,6 @@ public class BucketController {
 
 //        Lista objetos do bucket usando a requisição
         List<S3Object> objects = s3Client.listObjects(listObjectsRequest).contents();
-        System.out.println("Obteve Objetos:");
         return objects;
     }
 
@@ -56,7 +55,6 @@ public class BucketController {
 
     public void baixarObjetos(List<S3Object> objects, String bucketName){
         for (S3Object object : objects) {
-            System.out.println(object);
 //            Cria requisição para baixar um objeto do bucket
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
@@ -65,7 +63,8 @@ public class BucketController {
 
 //            Captura objeto usando a requisição e tenta transformar para formato de arquivo que o java interpreta
             InputStream objectContent = s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
-            if(!object.key().endsWith("txt")) {
+            if(object.key().endsWith("xlsx")) {
+                System.out.print(object.key() + ": ");
                 try {
                     File arquivo = new File("data/" + object.key());
                     if (!arquivo.exists()) {
