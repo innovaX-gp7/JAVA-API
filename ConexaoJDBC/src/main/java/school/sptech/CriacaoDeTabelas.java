@@ -79,7 +79,9 @@ public class CriacaoDeTabelas {
     public String criarTabelaTipoParametro(){
         String sql = "CREATE TABLE IF NOT EXISTS tipoParametro (\n" +
                 "id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
-                "nome VARCHAR(45) NOT NULL\n" +
+                "nome VARCHAR(45) NOT NULL,\n" +
+                "created_at DATETIME NOT NULL DEFAULT now(),\n" +
+                "modified_at DATETIME" +
                 ");";
         return sql;
     }
