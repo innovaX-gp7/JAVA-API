@@ -44,8 +44,10 @@ public class Main {
             Conexao conexao = new Conexao();
             JdbcTemplate con = conexao.getConexaoDoBanco();
 
+
             // Criando objetos para serem usados posteriormente
             CriacaoDeTabelas tabelas = new CriacaoDeTabelas();
+            App mensagem = new App();
 
 
             String derrubarDados = "drop table if exists dados;";
@@ -65,6 +67,9 @@ public class Main {
                 con.execute(tabelas.criarTabelaParametroRecomendacao());
                 con.execute(tabelas.criarTabelaLogJAR());
                 con.execute(tabelas.criarTabelaLeitura());
+                con.execute(mensagem.enviarMensagemSlack());
+                con.execute(mensagem.enviarRelatorioMes());
+                con.execute(mensagem.enviarAvisoNovaRecomendacao());
 
                 System.out.println("Tabelas criadas com sucesso!");
                 registrarLog(caminhoDoLog, "Tabelas criadas com sucesso!", horaDataAtualFormatada);
