@@ -71,19 +71,31 @@ public class RequisicaoIA {
 
         List<List<String>> dadosBanco = buscarDadosBanco();
 
-        //CÓDIGO DE PRIMATA V
         //Montar o prompt com os dados do banco
         StringBuilder promptBuilder = new StringBuilder();
-        promptBuilder.append("Com base nos seguintes parâmetros de recomendação: \n");
-        for (List<String> listaDados : dadosBanco) {
-            for (String dado : listaDados) {
-                promptBuilder.append(dado).append("\n");
 
+        promptBuilder.append("Com base nos seguintes parâmetros de recomendação: \n");
+        //Adiciona os dados dos parâmetros
+        for (String parametro : dadosBanco.get(0)) {
+            promptBuilder.append(parametro).append("\n");
+        }
+
+        //Adiciona o prompt da IA do banco (a descrição da tabela promptIA)
+        for (String prompt : dadosBanco.get(1)) {
+            if (prompt == dadosBanco.get(1).get(5)) {
+                promptBuilder.append(prompt).append("\n");
             }
         }
+
+        //Adiciona os dados das leituras
+        for (String leitura : dadosBanco.get(2)) {
+            promptBuilder.append(leitura).append("\n");
+        }
+
+
         promptBuilder.append("\nFaça uma análise e recomendação personalizada");
         System.out.println(promptBuilder.toString());
-        //MACAQUIICE
+
         String requestBody = String.format("""
                 {
                     "contents": [{
@@ -93,13 +105,15 @@ public class RequisicaoIA {
                     }],
                     "generationConfig": {
                         "temperature": 0.7,
-                        "maxOutputTokens": 100
+                        "maxOutputTokens": 1500
                     }
                 }
                 """, promptBuilder.toString().replace("\"", "\\\""));
 
+
         try {
             HttpClient client = HttpClient.newHttpClient();
+
 
             // Criar a requisição HTTP POST
             HttpRequest request = HttpRequest.newBuilder()
@@ -108,11 +122,33 @@ public class RequisicaoIA {
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
-            // Enviar a requisição e receber a resposta
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            Integer tentativas = 0;
+            Boolean respostaCorreta = false;
+            do {
+                // Enviar a requisição e receber a resposta
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Imprimir o corpo da resposta, não o objeto response inteiro
-            System.out.println("Resposta da IA: " + response.body());
+                Integer posicaoInicio = response.body().indexOf("cc*D");
+                Integer posicaoFinal = response.body().lastIndexOf("cc*D");
+                String respostaIA = "";
+
+
+                if ((posicaoFinal != -1) && (!posicaoInicio.equals(posicaoFinal))) {
+                    respostaIA = response.body().substring(posicaoInicio + 4, posicaoFinal);
+                    System.out.println(respostaIA);
+                    respostaCorreta = true;
+                } else if (posicaoInicio.equals(posicaoFinal) && posicaoInicio != -1) {
+                    posicaoInicio = response.body().indexOf("\"text\": ");
+                    respostaIA = response.body().substring(posicaoInicio + 9, posicaoFinal);
+                    System.out.println(respostaIA);
+                    respostaCorreta = true;
+                } else {
+                    tentativas ++;
+                    System.out.println("Erro na execução!");
+                }
+            } while (!respostaCorreta && tentativas < 3);
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
