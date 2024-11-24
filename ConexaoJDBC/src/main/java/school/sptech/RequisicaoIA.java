@@ -85,6 +85,9 @@ public class RequisicaoIA {
         List<List<String>> dadosBanco = buscarDadosBanco();
 
         for (String idEmpresa : dadosBanco.get(3)) {
+            if(idEmpresa.equals("0")) {
+                continue;
+            }
             System.out.println(idEmpresa);
             Integer idEmpresaNumber = Integer.parseInt(idEmpresa);
             //Montar o prompt com os dados do banco
@@ -96,7 +99,7 @@ public class RequisicaoIA {
                 String leitura = dadosBanco.get(0).get(i);
                 String[] valores = leitura.split(", ");
                 for (String valor : valores) {
-                    if(valor.equals(idEmpresa)) {
+                    if(valor.equals(idEmpresa) || valor.equals("0")) {
                         promptBuilder.append(leitura).append("\n");
                     }
                 }
@@ -114,7 +117,7 @@ public class RequisicaoIA {
                 String leitura = dadosBanco.get(2).get(i);
                 String[] valores = leitura.split(", ");
                 for (String valor : valores) {
-                    if(valor.equals(idEmpresa)) {
+                    if(valor.equals(idEmpresa) || valor.equals("0")) {
                         promptBuilder.append(leitura).append("\n");
                     }
                 }
