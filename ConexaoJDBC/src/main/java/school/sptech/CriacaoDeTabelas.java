@@ -54,7 +54,7 @@ public class CriacaoDeTabelas {
 
         String sql = "CREATE TABLE IF NOT EXISTS promptIA (\n" +
                 "id INT PRIMARY KEY AUTO_INCREMENT,\n" +
-                "descricao VARCHAR(1000),\n" +
+                "descricao VARCHAR(3000),\n" +
                 "dataHora DATETIME,\n" +
                 "created_at DATETIME NOT NULL DEFAULT now(),\n" +
                 "modified_at DATETIME" +
@@ -65,9 +65,8 @@ public class CriacaoDeTabelas {
     public String criarTabelaRecomendacaoIA() {
         String sql = "CREATE TABLE IF NOT EXISTS recomendacaoIA (\n" +
                 "id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
-                "unidadeFederativa VARCHAR(50) NOT NULL,\n" +
-                "recomendacao VARCHAR(100) NOT NULL,\n" +
-                "created_at DATETIME NOT NULL, \n" +
+                "recomendacao VARCHAR(3000) NOT NULL,\n" +
+                "created_at DATETIME NOT NULL DEFAULT now(), \n" +
                 "fkEmpresa INT,\n" +
                 "fkPromptIA INT,\n" +
                 "CONSTRAINT fk_recomendacao_empresa FOREIGN KEY(fkEmpresa) REFERENCES empresa(id),\n" +
@@ -79,7 +78,9 @@ public class CriacaoDeTabelas {
     public String criarTabelaTipoParametro(){
         String sql = "CREATE TABLE IF NOT EXISTS tipoParametro (\n" +
                 "id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
-                "nome VARCHAR(45) NOT NULL\n" +
+                "nome VARCHAR(45) NOT NULL,\n" +
+                "created_at DATETIME NOT NULL DEFAULT now(),\n" +
+                "modified_at DATETIME" +
                 ");";
         return sql;
     }

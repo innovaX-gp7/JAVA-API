@@ -12,4 +12,10 @@ public class InsercaoTabelas {
                 "VALUES ('" + uf + "', " + anoFinal + ", " + mesInt + ", " + area + ")";
         return sql;
     }
+
+    public static String inserirRecomendacao(String recomendacao, Integer fkEmpresa, Integer fkPromptIA){
+        String sql = "INSERT INTO recomendacaoIA (recomendacao, fkEmpresa, fkPromptIA)" +
+                "VALUES ('" + recomendacao + "', " + fkEmpresa + ", " + fkPromptIA + ")";
+        return sql;
+    }
 }
