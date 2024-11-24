@@ -106,9 +106,10 @@ public class RequisicaoIA {
             }
 
             //Adiciona o prompt da IA do banco (a descrição da tabela promptIA)
+            int idPromptSorteado = ThreadLocalRandom.current().nextInt(1, dadosBanco.get(1).size() + 1);
             for (String prompt : dadosBanco.get(1)) {
-                if (prompt == dadosBanco.get(1).get(5)) {
-                    promptBuilder.append(dadosBanco.get(1).get(5)).append("\n");
+                if (prompt == dadosBanco.get(1).get(idPromptSorteado - 1)) {
+                    promptBuilder.append(dadosBanco.get(1).get(idPromptSorteado - 1)).append("\n");
                 }
             }
 
@@ -180,7 +181,7 @@ public class RequisicaoIA {
                 } while (!respostaCorreta && tentativas < 3);
                 if (respostaCorreta) {
                     String respostaTratada = tratarResposta(respostaIA);
-                    jdbcTemplate.execute(InsercaoTabelas.inserirRecomendacao(respostaTratada,idEmpresaNumber, 6));
+                    jdbcTemplate.execute(InsercaoTabelas.inserirRecomendacao(respostaTratada,idEmpresaNumber, idPromptSorteado));
                 }
 
 
