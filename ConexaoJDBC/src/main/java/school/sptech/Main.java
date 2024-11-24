@@ -32,7 +32,7 @@ public class Main {
 
         var caminhoDoLog = "log.txt";
         Slack slack = new Slack();
-        String bucketName = "innovaxs3";
+        String bucketName = "seu-bucket-aqui";
         StringBuilder logText = new StringBuilder();
 
         String sqlText = ("insert into logJAR(descricao, created_at) values ('%s','%s')");
