@@ -23,7 +23,7 @@ public class App {
         public String enviarMensagemSlack() throws Exception {
             String sql = ("select distinct descricao\n" +
                     "from logJAR \n" +
-                    "where descricao like \"%manipulados%\"\n" +
+                    "where descricao like \"%registrados%\"\n" +
                     "and created_at = (select max(created_at) from logJAR limit 1) limit 1;");
 
 
@@ -73,9 +73,7 @@ public class App {
                     "Resumo do Mês: Desmatamento total: %.2f km² | Média da temperatura: %.1f°C | Média de precipitação: %.2f mm. Confira com mais detalhes na dashboard!",
                     totalAreaDesmatada, mediaTemperatura, mediaPrecipitacao
             );
-
-
-            message.put("text", mensagemFormatada);
+            message.put("text", new String(mensagemFormatada.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
 
             slack.sendMessage(message);
 
@@ -87,7 +85,7 @@ public class App {
             String query = ("     SELECT \n" +
                     "                     recomendacao\n" +
                     "                 FROM \n" +
-                    "                     recomendacao \n" +
+                    "                     recomendacaoIA \n" +
                     "                 WHERE \n" +
                     "                     created_at >= NOW() - INTERVAL 5 MINUTE;");
 
