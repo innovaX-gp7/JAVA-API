@@ -2,6 +2,7 @@ package school.sptech;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import school.sptech.s3.BucketController;
@@ -23,12 +24,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) {
         var formatador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         var horaDataAtual = LocalDateTime.now();
         var horaDataAtualFormatada = formatador.format(horaDataAtual);
 
         var caminhoDoLog = "log.txt";
+        Slack slack = new Slack();
         String bucketName = "innovaxs3";
         StringBuilder logText = new StringBuilder();
 
@@ -41,11 +44,13 @@ public class Main {
 
             // Criando objetos para serem usados posteriormente
             CriacaoDeTabelas tabelas = new CriacaoDeTabelas();
+            App mensagem = new App();
 
             // Validador de conexão
             Boolean conexaoOk = true;
 
             String derrubarDados = "drop table if exists dados;";
+
             try {
                 // Aqui estamos tentando executar os métodos para criação de tabelas
                 con.execute(derrubarDados);
@@ -58,6 +63,9 @@ public class Main {
                 con.execute(tabelas.criarTabelaParametroRecomendacao());
                 con.execute(tabelas.criarTabelaLogJAR());
                 con.execute(tabelas.criarTabelaLeitura());
+                con.execute(mensagem.enviarMensagemSlack());
+                con.execute(mensagem.enviarRelatorioMes());
+                con.execute(mensagem.enviarAvisoNovaRecomendacao());
 
                 horaDataAtualFormatada = formatador.format(LocalDateTime.now());
                 registrarLog(logText, "Tabelas Criadas", horaDataAtualFormatada);
@@ -275,6 +283,7 @@ public class Main {
         } catch (Exception e) {
             System.err.println("Erro durante o processamento: " + e.getMessage());
         }
+
     }
 
     // Função auxiliar para pegar o valor da célula como String

@@ -90,6 +90,13 @@
             <version>2.27.21</version> <!-- Use a mesma versão do SDK S3 -->
         </dependency>
 
+        <!-- Dependências do JSON -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20201115</version>
+        </dependency>
+
     </dependencies>
 
 
