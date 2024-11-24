@@ -63,9 +63,6 @@ public class Main {
                 con.execute(tabelas.criarTabelaParametroRecomendacao());
                 con.execute(tabelas.criarTabelaLogJAR());
                 con.execute(tabelas.criarTabelaLeitura());
-                con.execute(mensagem.enviarMensagemSlack());
-                con.execute(mensagem.enviarRelatorioMes());
-                con.execute(mensagem.enviarAvisoNovaRecomendacao());
 
                 horaDataAtualFormatada = formatador.format(LocalDateTime.now());
                 registrarLog(logText, "Tabelas Criadas", horaDataAtualFormatada);
@@ -279,8 +276,12 @@ public class Main {
             } catch (Exception e) {
                 System.err.println("Erro ao fazer o upload do log para o s3: " + e.getMessage());
             }
+            con.execute(mensagem.enviarMensagemSlack());
+            con.execute(mensagem.enviarRelatorioMes());
+            con.execute(mensagem.enviarAvisoNovaRecomendacao());
 
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println("Erro durante o processamento: " + e.getMessage());
         }
 

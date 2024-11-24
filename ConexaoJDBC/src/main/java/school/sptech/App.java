@@ -23,7 +23,7 @@ public class App {
         public String enviarMensagemSlack() throws Exception {
             String sql = ("select distinct descricao\n" +
                     "from logJAR \n" +
-                    "where descricao like \"%manipulados%\"\n" +
+                    "where descricao like \"%registrados%\"\n" +
                     "and created_at = (select max(created_at) from logJAR limit 1) limit 1;");
 
 
