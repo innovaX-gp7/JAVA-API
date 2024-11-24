@@ -5,25 +5,21 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import school.sptech.s3.BucketController;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,14 +31,12 @@ public class Main {
         System.out.println(horaDataAtualFormatada);
         var caminhoDoLog = "log.txt";
         String bucketName = "s3-lab-ex06";
+
+
         try {
-
-
             // Inicializando a conexão com o banco
             Conexao conexao = new Conexao();
-            JdbcTemplate con = conexao.getConexaoDoBanco();
-
-
+            JdbcTemplate con = Conexao.getConexaoDoBanco();
 
             // Criando objetos para serem usados posteriormente
             CriacaoDeTabelas tabelas = new CriacaoDeTabelas();
@@ -52,20 +46,20 @@ public class Main {
 
 
             try {
-                // Aqui estamos tentando executar os métodos para criação de tabelas
+                // Aqui estamos a tentar executar os métodos para criação de tabelas
                 con.execute(derrubarDados);
                 System.out.println("Dropou");
                 registrarLog(caminhoDoLog, "Dropou", horaDataAtualFormatada);
 
-                con.execute(tabelas.criarTabelaEmpresa());
-                con.execute(tabelas.criarTabelaUserRole());
-                con.execute(tabelas.criarTabelaUsuario());
-                con.execute(tabelas.criarTabelaPromptIA());
-                con.execute(tabelas.criarTabelaRecomendacaoIA());
-                con.execute(tabelas.criarTabelaTipoParametro());
-                con.execute(tabelas.criarTabelaParametroRecomendacao());
-                con.execute(tabelas.criarTabelaLogJAR());
-                con.execute(tabelas.criarTabelaLeitura());
+                tabelas.criarTabelaEmpresa();
+                tabelas.criarTabelaUserRole();
+                tabelas.criarTabelaUsuario();
+                tabelas.criarTabelaPromptIA();
+                tabelas.criarTabelaRecomendacaoIA();
+                tabelas.criarTabelaTipoParametro();
+                tabelas.criarTabelaParametroRecomendacao();
+                tabelas.criarTabelaLogJAR();
+                tabelas.criarTabelaLeitura();
 
                 System.out.println("Tabelas criadas com sucesso!");
                 registrarLog(caminhoDoLog, "Tabelas criadas com sucesso!", horaDataAtualFormatada);
@@ -104,7 +98,6 @@ public class Main {
                     System.err.println("Erro ao criar buckets: " + e.getMessage());
                     registrarLog(caminhoDoLog, "Erro ao criar bucket: ", horaDataAtualFormatada);
                 }
-
 
             }
             for (Bucket bucket : buckets) {
@@ -193,10 +186,12 @@ public class Main {
                                 }
 
                                 // Exemplo de saída dos dados
-//                                System.out.println("Data: " + data + ", Precipitação: " + precipitacaoMensal + ", Temperatura Média: " + temperaturaMediaMensal);
+//                                System.out.println("Data: " + data +", Precipitação: "+ precipitacaoMensal +", Temperatura Média: "+ temperaturaMediaMensal);
 
 
                                 // Inserindo dados no banco
+                                InsercaoTabelas inserirNasTabelas = new InsercaoTabelas();
+
                                 con.update(InsercaoTabelas.inserirDados(temperaturaMediaMensal, precipitacaoMensal, cidade, uf, ano, mes));
                                 System.out.println("Insert de precipitação deu certo!");
                             }
