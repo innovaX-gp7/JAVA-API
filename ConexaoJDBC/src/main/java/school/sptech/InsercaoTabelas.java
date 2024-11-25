@@ -23,4 +23,10 @@ public class InsercaoTabelas extends Conexao{
         System.out.println("Dados de desmatamento inseridos com sucesso na tabela `leitura`.");
         return sql;
     }
+
+    public static String inserirRecomendacao(String recomendacao, Integer fkEmpresa, Integer fkPromptIA){
+        String sql = "INSERT INTO recomendacaoIA (recomendacao, fkEmpresa, fkPromptIA)" +
+                "VALUES ('" + recomendacao + "', " + fkEmpresa + ", " + fkPromptIA + ")";
+        return sql;
+    }
 }
