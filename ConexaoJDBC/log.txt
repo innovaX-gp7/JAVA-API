@@ -1,17 +1,1 @@
-[2024-11-22 19:18:27.348] Erro ao criar as tabelas
-[2024-11-22 19:27:23.623] Erro ao criar as tabelas
-[2024-11-22 20:15:22.247] Erro ao criar as tabelas
-[2024-11-22 20:36:47.357] Erro ao criar as tabelas
-[2024-11-22 20:38:57.954] Dropou
-[2024-11-22 20:38:57.954] Tabelas criadas com sucesso!
-[2024-11-22 21:00:10.509] Dropou
-[2024-11-22 21:00:10.509] Tabelas criadas com sucesso!
-[2024-11-22 21:07:33.926] Dropou
-[2024-11-22 21:07:33.926] Tabelas criadas com sucesso!
-[2024-11-24 18:50:15.206] Erro ao criar as tabelas
-[2024-11-24 18:56:05.767] Dropou
-[2024-11-24 18:56:05.767] Tabelas criadas com sucesso!
-[2024-11-24 19:13:39.602] Dropou
-[2024-11-24 19:13:39.602] Tabelas criadas com sucesso!
-[2024-11-24 19:54:01.294] Dropou
-[2024-11-24 19:54:01.294] Tabelas criadas com sucesso!
+
