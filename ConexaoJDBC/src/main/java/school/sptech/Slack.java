@@ -8,7 +8,7 @@ import java.net.URL;
 
 public class Slack {
 
-    private String url = "https://hooks.slack.com/services/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";
+    private String url = System.getenv("WEBHOOK");
 
     public void sendMessage(JSONObject message) throws Exception {
         URL obj = new URL(this.url);

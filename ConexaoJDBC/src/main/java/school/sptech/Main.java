@@ -2,20 +2,16 @@ package school.sptech;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import school.sptech.s3.BucketController;
-import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -32,7 +28,7 @@ public class Main {
 
         var caminhoDoLog = "log.txt";
         Slack slack = new Slack();
-        String bucketName = "seu-bucket-aqui";
+        String bucketName = System.getenv("BUCKET_NAME");
         StringBuilder logText = new StringBuilder();
 
         String sqlText = ("insert into logJAR(descricao, created_at) values ('%s','%s')");
@@ -52,17 +48,18 @@ public class Main {
             String derrubarDados = "drop table if exists dados;";
 
             try {
-                // Aqui estamos tentando executar os métodos para criação de tabelas
+                // Aqui estamos a tentar executar os métodos para criação de tabelas
                 con.execute(derrubarDados);
-                con.execute(tabelas.criarTabelaEmpresa());
-                con.execute(tabelas.criarTabelaUserRole());
-                con.execute(tabelas.criarTabelaUsuario());
-                con.execute(tabelas.criarTabelaPromptIA());
-                con.execute(tabelas.criarTabelaRecomendacaoIA());
-                con.execute(tabelas.criarTabelaTipoParametro());
-                con.execute(tabelas.criarTabelaParametroRecomendacao());
-                con.execute(tabelas.criarTabelaLogJAR());
-                con.execute(tabelas.criarTabelaLeitura());
+
+                tabelas.criarTabelaEmpresa();
+                tabelas.criarTabelaUserRole();
+                tabelas.criarTabelaUsuario();
+                tabelas.criarTabelaPromptIA();
+                tabelas.criarTabelaRecomendacaoIA();
+                tabelas.criarTabelaTipoParametro();
+                tabelas.criarTabelaParametroRecomendacao();
+                tabelas.criarTabelaLogJAR();
+                tabelas.criarTabelaLeitura();
 
                 horaDataAtualFormatada = formatador.format(LocalDateTime.now());
                 registrarLog(logText, "Tabelas Criadas", horaDataAtualFormatada);
