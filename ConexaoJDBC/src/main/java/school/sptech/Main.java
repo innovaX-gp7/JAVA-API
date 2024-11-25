@@ -5,7 +5,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import school.sptech.s3.BucketController;
-import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
@@ -29,7 +28,7 @@ public class Main {
 
         var caminhoDoLog = "log.txt";
         Slack slack = new Slack();
-        String bucketName = "seu-bucket-aqui";
+        String bucketName = System.getenv("BUCKET_NAME");
         StringBuilder logText = new StringBuilder();
 
         String sqlText = ("insert into logJAR(descricao, created_at) values ('%s','%s')");
