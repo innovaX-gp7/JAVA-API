@@ -193,7 +193,7 @@ public class Main {
                                     }
                                 }
                                 horaDataAtualFormatada = formatador.format(LocalDateTime.now());
-                                mensage = "O arquivo " + arquivo.getName() + " foi registado";
+                                mensage = "O arquivo " + arquivo.getName() + " foi registrado";
                                 registrarLog(logText, mensage, horaDataAtualFormatada);
                                 con.execute(String.format(sqlText, mensage, horaDataAtualFormatada));
                             } else {
@@ -233,7 +233,7 @@ public class Main {
                                     }
                                 }
                                 horaDataAtualFormatada = formatador.format(LocalDateTime.now());
-                                mensage = "O arquivo " + arquivo.getName() + " foi registado";
+                                mensage = "O arquivo " + arquivo.getName() + " foi registrado";
                                 registrarLog(logText, mensage, horaDataAtualFormatada);
                                 con.execute(String.format(sqlText, mensage, horaDataAtualFormatada));
                             }
@@ -273,9 +273,11 @@ public class Main {
             } catch (Exception e) {
                 System.err.println("Erro ao fazer o upload do log para o s3: " + e.getMessage());
             }
+
             con.execute(mensagem.enviarMensagemSlack());
             con.execute(mensagem.enviarRelatorioMes());
             con.execute(mensagem.enviarAvisoNovaRecomendacao());
+
 
         } catch (Exception e) {
             e.printStackTrace();

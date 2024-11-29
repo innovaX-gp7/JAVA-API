@@ -50,13 +50,14 @@ public class App {
         public String enviarRelatorioMes() throws Exception {
 
             String relatorioMes = ("SELECT \n" +
-                    "    round(SUM(areaDesmatada),2) AS totalAreaDesmatada,\n" +
-                    "    round(AVG(temperaturaMensal),1) AS mediaTemperatura,\n" +
-                    "    round(AVG(precipitacaoMensal),2) AS mediaPrecipitacao\n" +
+                    "    MAX(mes) AS mes,\n" +
+                    "    ROUND(SUM(areaDesmatada), 2) AS totalAreaDesmatada,\n" +
+                    "    ROUND(AVG(temperaturaMensal), 1) AS mediaTemperatura,\n" +
+                    "    ROUND(AVG(precipitacaoMensal), 2) AS mediaPrecipitacao\n" +
                     "FROM \n" +
                     "    leitura\n" +
                     "WHERE \n" +
-                    " mes = MONTH(CURDATE()) AND ano = YEAR(CURDATE());");
+                    "    ano = YEAR(CURDATE());");
 
 
 
