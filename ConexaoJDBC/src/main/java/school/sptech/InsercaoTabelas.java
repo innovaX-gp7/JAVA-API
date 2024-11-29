@@ -2,7 +2,7 @@ package school.sptech;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class InsercaoTabelas extends Conexao{
+public class InsercaoTabelas extends Conexao {
 
     public InsercaoTabelas() {
         super();
@@ -27,6 +27,7 @@ public class InsercaoTabelas extends Conexao{
     public static String inserirRecomendacao(String recomendacao, Integer fkEmpresa, Integer fkPromptIA){
         String sql = "INSERT INTO recomendacaoIA (recomendacao, fkEmpresa, fkPromptIA)" +
                 "VALUES ('" + recomendacao + "', " + fkEmpresa + ", " + fkPromptIA + ")";
+        getConexaoDoBanco().update(sql);
         return sql;
     }
 }
