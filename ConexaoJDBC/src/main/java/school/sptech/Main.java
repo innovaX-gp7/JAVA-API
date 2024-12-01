@@ -45,11 +45,11 @@ public class Main {
             // Validador de conexão
             Boolean conexaoOk = true;
 
-            String derrubarDados = "drop table if exists dados;";
+            String renovarDados = "drop table if exists leitura;";
 
             try {
                 // Aqui estamos a tentar executar os métodos para criação de tabelas
-                con.execute(derrubarDados);
+                con.execute(renovarDados);
 
                 tabelas.criarTabelaEmpresa();
                 tabelas.criarTabelaUserRole();
@@ -62,13 +62,25 @@ public class Main {
                 tabelas.criarTabelaLeitura();
 
                 horaDataAtualFormatada = formatador.format(LocalDateTime.now());
-                registrarLog(logText, "Tabelas Criadas", horaDataAtualFormatada);
+                registrarLog(logText, "Tabelas Criadas/Atualizadas", horaDataAtualFormatada);
+                con.execute(String.format(sqlText, "Tabelas Criadas/Atualizadas", horaDataAtualFormatada));
             } catch (DataAccessException e) {
                 // Esse bloco de código só será executado caso a tentativa tenha alguma exceção
                 conexaoOk = false;
                 String errorMensage = "Erro ao criar as tabelas: " + e.getMessage();
                 horaDataAtualFormatada = formatador.format(LocalDateTime.now());
                 registrarLog(logText, errorMensage, horaDataAtualFormatada);
+            }
+
+            if(conexaoOk){
+                try {
+                    InsercaoTabelas.inserirDadosTabelasAuxiliares();
+                } catch (Exception e){
+                    String errorMensage = "Erro ao inserir dados iniciais: " + e.getMessage();
+                    horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                    registrarLog(logText, errorMensage, horaDataAtualFormatada);
+                    con.execute(String.format(sqlText, errorMensage, horaDataAtualFormatada));
+                }
             }
 
             // View S3
@@ -162,6 +174,7 @@ public class Main {
                                     ufCidadesMap.computeIfAbsent(uf, k -> new ArrayList<>()).add(cidade);
                                 } else {
                                     System.out.println("Cidade não encontrada.");
+                                    continue;
                                 }
 
                                 // Processa os dados a partir da linha 11
@@ -240,7 +253,10 @@ public class Main {
                             workbook.close();
 
                         } catch (Exception e) {
-                            System.err.println(e.getMessage());
+                            horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                            String mensage = "Erro ao tratar o arquivo " + arquivo.getName() + ": " + e.getMessage();
+                            registrarLog(logText, mensage, horaDataAtualFormatada);
+                            con.execute(String.format(sqlText, mensage, horaDataAtualFormatada));
                         }
                     }
                 }
@@ -253,6 +269,37 @@ public class Main {
                     System.err.println(e.getMessage());
                 }
             }
+
+            // Geração de recomendação com AI
+            try{
+                RequisicaoIA.gerarRecomendacao();
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                String mensage = "Novas recomendaçãos geradas e armazenadas";
+                registrarLog(logText, mensage, horaDataAtualFormatada);
+                if(conexaoOk){con.execute(String.format(sqlText, mensage, horaDataAtualFormatada));}
+            } catch (Exception e){
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                registrarLog(logText, e.getMessage(), horaDataAtualFormatada);
+                if(conexaoOk && !e.getMessage().contains("truncation")){con.execute(String.format(sqlText, e.getMessage(), horaDataAtualFormatada));}
+            }
+
+            // Envio para slack
+            try {
+                mensagem.enviarMensagemSlack();
+                mensagem.enviarRelatorioMes();
+                mensagem.enviarAvisoNovaRecomendacao();
+
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                String mensage = "Notificações enviadas com sucesso";
+                registrarLog(logText, mensage, horaDataAtualFormatada);
+                if(conexaoOk){con.execute(String.format(sqlText, mensage, horaDataAtualFormatada));}
+            } catch (Exception e){
+                horaDataAtualFormatada = formatador.format(LocalDateTime.now());
+                String mensage = "Erro ao enviar notificações: " + e.getMessage();
+                registrarLog(logText, mensage, horaDataAtualFormatada);
+                if(conexaoOk){con.execute(String.format(sqlText, mensage, horaDataAtualFormatada));}
+            }
+
 
             // Upload do log para o S3 após todo o processamento
             try {
@@ -273,11 +320,6 @@ public class Main {
             } catch (Exception e) {
                 System.err.println("Erro ao fazer o upload do log para o s3: " + e.getMessage());
             }
-
-            con.execute(mensagem.enviarMensagemSlack());
-            con.execute(mensagem.enviarRelatorioMes());
-            con.execute(mensagem.enviarAvisoNovaRecomendacao());
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -310,6 +352,7 @@ public class Main {
     }
 
     private static void registrarLog(StringBuilder logText, String descricao, String horaDataAtualFormatada) {
+        descricao = descricao.replace("\n", " ");
         String entradaLog = String.format("[%s] %s\n", horaDataAtualFormatada, descricao);
         System.out.print(entradaLog);
         logText.append(entradaLog);
