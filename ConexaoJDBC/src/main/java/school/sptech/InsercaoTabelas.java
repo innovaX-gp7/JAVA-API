@@ -11,7 +11,6 @@ public class InsercaoTabelas extends Conexao {
     public static String inserirDados(String temperaturaMensal, String precipitacaoMensal, String cidade, String unidadeFederativa, Integer ano, Integer mes){
         String sql = "INSERT INTO leitura (temperaturaMensal, precipitacaoMensal, cidade, unidadeFederativa, ano, mes) " +
                 "VALUES (" + temperaturaMensal + ", " + precipitacaoMensal + ", '" + cidade + "', '" + unidadeFederativa + "', " + ano + ", " + mes + ")";
-        getConexaoDoBanco().update(sql);
 //        System.out.println("Dados inseridos com sucesso na tabela `leitura`.");
         return sql;
     }
@@ -19,7 +18,7 @@ public class InsercaoTabelas extends Conexao {
     public static String inserirDadosDesmatamentos(String unidadeFederativa, String anoFinal, Integer mesInt, Double area) {
         String sql = "INSERT INTO leitura (unidadeFederativa, ano, mes, areaDesmatada) " +
                 "VALUES ('" + unidadeFederativa + "', " + anoFinal + ", " + mesInt + ", " + area + ")";
-        getConexaoDoBanco().update(sql);
+//        getConexaoDoBanco().update(sql);
 //        System.out.println("Dados de desmatamento inseridos com sucesso na tabela `leitura`.");
         return sql;
     }
@@ -27,7 +26,20 @@ public class InsercaoTabelas extends Conexao {
     public static String inserirRecomendacao(String recomendacao, Integer fkEmpresa, Integer fkPromptIA){
         String sql = "INSERT INTO recomendacaoIA (recomendacao, fkEmpresa, fkPromptIA)" +
                 "VALUES ('" + recomendacao + "', " + fkEmpresa + ", " + fkPromptIA + ")";
-        getConexaoDoBanco().update(sql);
+//        getConexaoDoBanco().update(sql);
         return sql;
+    }
+
+    public static void inserirDadosTabelasAuxiliares(){
+        String sql = "INSERT IGNORE INTO userRole (id, nome) VALUES \n" +
+                "(1, 'Representante Legal'),\n" +
+                "(2, 'Gerente'),\n" +
+                "(3, 'Analista');\n";
+        getConexaoDoBanco().execute(sql);
+        sql = "INSERT IGNORE INTO tipoParametro (id, nome) VALUES \n" +
+                "(1, 'temperatura'),\n" +
+                "(2, 'umidade'),\n" +
+                "(3, 'precipitação');\n";
+        getConexaoDoBanco().execute(sql);
     }
 }

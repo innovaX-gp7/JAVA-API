@@ -20,34 +20,24 @@ public class App {
         JdbcTemplate con = conexao.getConexaoDoBanco();
 
 
-        public String enviarMensagemSlack() throws Exception {
-            String sql = ("select distinct descricao\n" +
-                    "from logJAR \n" +
-                    "where descricao like \"%registrados%\"\n" +
-                    "and created_at = (select max(created_at) from logJAR limit 1) limit 1;");
-
+        public void enviarMensagemSlack() throws Exception {
+            String sql = ("SELECT DISTINCT descricao\n" +
+                    "FROM logJAR\n" +
+                    "WHERE descricao LIKE \"%registrados%\"\n" +
+                    "AND created_at > DATE_SUB(NOW(), INTERVAL 2 HOUR)\n" +
+                    "LIMIT 1;");
 
             String resultadoSelect = con.queryForObject(sql, String.class);
-
 
             if (resultadoSelect != null) {
                 message.put("text",
                         ":rotating_light: Os dados da dashboard foram atualizados! Verifique a dashboard para visualizar as novas informações ");
-
-
             }
+
             slack.sendMessage(message);
-            return sql;
         }
 
-            // PARA: nosso cliente -> representante da empresa
-            // QUANDO: mensalmente, quando tiver dado atualizado, e for gerado uma nova notificação
-            // Atualização Mensal: média de area desmatada da amazonia, de temperatura e umidade
-            // quando for atualizado o dado na dashboard
-            // quando for gerada uma nova recomendação da IA
-
-
-        public String enviarRelatorioMes() throws Exception {
+        public void enviarRelatorioMes() throws Exception {
 
             String relatorioMes = ("SELECT \n" +
                     "    MAX(mes) AS mes,\n" +
@@ -57,7 +47,7 @@ public class App {
                     "FROM \n" +
                     "    leitura\n" +
                     "WHERE \n" +
-                    "    ano = YEAR(CURDATE());");
+                    "    ano = YEAR(CURDATE()) - 1;");
 
 
 
@@ -77,35 +67,26 @@ public class App {
             message.put("text", new String(mensagemFormatada.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
 
             slack.sendMessage(message);
-
-            return relatorioMes;
         }
 
         public String enviarAvisoNovaRecomendacao() throws Exception {
-
             String query = ("     SELECT \n" +
                     "                     recomendacao\n" +
                     "                 FROM \n" +
                     "                     recomendacaoIA \n" +
                     "                 WHERE \n" +
-                    "                     created_at >= NOW() - INTERVAL 5 MINUTE;");
-
-
+                    "                     created_at >= NOW() - INTERVAL 5 MINUTE limit 1;");
 
             String resultadoQuery = con.queryForObject(query, String.class);
 
-           if (resultadoQuery != null) {
-               message.put("text",
+            if (resultadoQuery != null) {
+                message.put("text",
                        ":rotating_light: Uma nova recomendação foi enviada! Verifique a dashboard para visualizar");
-
-           }
+            }
 
             slack.sendMessage(message);
             return query;
 
         }
-
-
-
 }
 
