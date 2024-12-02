@@ -189,7 +189,8 @@ public class RequisicaoIA {
                 .replace("*", "")
                 .replace("\\n\\n", " ")
                 .replace("\\n", "")
-                .replace("\n","");
+                .replace("\n","")
+                .replace("'","\\'");
 //        System.out.println(respostaTratada);
         return respostaTratada;
     }

@@ -75,6 +75,7 @@ public class Main {
             if(conexaoOk){
                 try {
                     InsercaoTabelas.inserirDadosTabelasAuxiliares();
+                    InsercaoTabelas.inserirPromptBase();
                 } catch (Exception e){
                     String errorMensage = "Erro ao inserir dados iniciais: " + e.getMessage();
                     horaDataAtualFormatada = formatador.format(LocalDateTime.now());

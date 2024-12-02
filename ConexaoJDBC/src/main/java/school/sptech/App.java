@@ -47,7 +47,7 @@ public class App {
                     "FROM \n" +
                     "    leitura\n" +
                     "WHERE \n" +
-                    "    ano = YEAR(CURDATE()) - 1;");
+                    "    ano = YEAR(CURDATE()) - 1 and mes = month(current_date()) limit 1;");
 
 
 
