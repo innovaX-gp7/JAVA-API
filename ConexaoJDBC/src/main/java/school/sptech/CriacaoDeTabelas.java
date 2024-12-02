@@ -91,7 +91,8 @@ public class CriacaoDeTabelas extends Conexao{
                 "fkEmpresa INT NOT NULL,\n" +
                 "fkTipoParametro INT NOT NULL,\n" +
                 "CONSTRAINT fk_parametro_tipo_param FOREIGN KEY (fkTipoParametro) REFERENCES tipoParametro(id) ON DELETE CASCADE, \n" +
-                "CONSTRAINT fk_parametro_empresa FOREIGN KEY (fkEmpresa) REFERENCES empresa(id) ON DELETE CASCADE\n" +
+                "CONSTRAINT fk_parametro_empresa FOREIGN KEY (fkEmpresa) REFERENCES empresa(id) ON DELETE CASCADE, \n" +
+                "UNIQUE (fkEmpresa,fkTipoParametro)" +
                 ");";
         getConexaoDoBanco().execute(sql);
     }

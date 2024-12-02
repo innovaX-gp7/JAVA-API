@@ -29,6 +29,5 @@ public class Slack {
             throw new RuntimeException("Failed to send message. HTTP error code: " + responseCode);
         }
 
-        System.out.println("Mensagem enviada com sucesso para o Slack " + responseCode);
     }
 }

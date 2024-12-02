@@ -37,8 +37,8 @@ public class InsercaoTabelas extends Conexao {
                 "(3, 'Analista');\n";
         getConexaoDoBanco().execute(sql);
         sql = "INSERT IGNORE INTO tipoParametro (id, nome) VALUES \n" +
-                "(1, 'temperatura'),\n" +
-                "(2, 'umidade'),\n" +
+                "(1, 'desmatamento'),\n" +
+                "(2, 'temperatura'),\n" +
                 "(3, 'precipitação');\n";
         getConexaoDoBanco().execute(sql);
     }
