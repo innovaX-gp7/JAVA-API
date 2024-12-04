@@ -32,9 +32,9 @@ public class InsercaoTabelas extends Conexao {
 
     public static void inserirDadosTabelasAuxiliares(){
         String sql = "INSERT IGNORE INTO userRole (id, nome) VALUES \n" +
-                "(1, 'Representante Legal'),\n" +
+                "(1, 'Representante'),\n" +
                 "(2, 'Gerente'),\n" +
-                "(3, 'Analista');\n";
+                "(3, 'Funcionário');\n";
         getConexaoDoBanco().execute(sql);
         sql = "INSERT IGNORE INTO tipoParametro (id, nome) VALUES \n" +
                 "(1, 'desmatamento'),\n" +
