@@ -53,9 +53,10 @@ public class InsercaoTabelas extends Conexao {
                 "Não ultrapasse 2000 caracteres de resposta.\n" +
                 "Não termine a resposta bruptamente.\n" +
                 "Evite ao maximo usar palavras com acentuação.\n" +
-                "Escreva a resposta texto corrido, SEM TÓPICOS.\n" +
+                "Responda de forma direta, sem listar itens ou tópicos, mantendo a resposta como um texto contínuo. Sem quebras de texto.\n" +
                 "Não utilize aspas simples ou duplas.\n" +
                 "Escreva sem markdown.\n" +
+                "Não descreva o que fazer estado por estado, apenas uma recomendação de ações gerais a tomar" +
                 "', NOW());\n";
         getConexaoDoBanco().execute(sql);
     }

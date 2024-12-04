@@ -105,7 +105,7 @@ public class RequisicaoIA {
                 }
             }
 
-            promptBuilder.append("Caso os valores ultrapassaram os parametros a seguir, dê foco a eles em sua resposta: \n");
+            promptBuilder.append("Caso os valores ultrapassaram os parâmetros a seguir, dê foco a eles em sua resposta: \n");
             //Adiciona os dados dos parâmetros
             for (int i = 0; i < dadosBanco.get(0).size(); i++) {
                 String leitura = dadosBanco.get(0).get(i);
@@ -118,7 +118,7 @@ public class RequisicaoIA {
             }
 
             //Adiciona os dados das leituras
-            promptBuilder.append("As leituras e dados que foram capitadas do mes e ano atual (2023) e do mesmo mes do ano anterior (2022) são essas:");
+            promptBuilder.append("As leituras e dados que foram captadas do mês e ano atual (2023) e do mesmo mês do ano anterior (2022) são essas:");
             for (int i = 0; i < dadosBanco.get(2).size(); i++) {
                 String leitura = dadosBanco.get(2).get(i);
                 String[] valores = leitura.split(", ");
@@ -191,7 +191,6 @@ public class RequisicaoIA {
                 .replace("\\n", "")
                 .replace("\n","")
                 .replace("'","\\'");
-//        System.out.println(respostaTratada);
         return respostaTratada;
     }
 }
